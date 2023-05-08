@@ -15,9 +15,9 @@ app.get("/api", async (req, res) => {
 
   if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
     options = {
-      args: [...chrome.args, "--hide-scrollbars", "--disable-web-security"],
-      defaultViewport: chrome.defaultViewport,
-      executablePath: await chrome.executablePath,
+      args: [...chrome?.args, "--hide-scrollbars", "--disable-web-security"],
+      defaultViewport: chrome?.defaultViewport,
+      executablePath: chrome && await chrome.executablePath,
       headless: true,
       ignoreHTTPSErrors: true,
     };
@@ -27,11 +27,16 @@ app.get("/api", async (req, res) => {
     let browser = await puppeteer.launch(options);
 
     let page = await browser.newPage();
-    await page.goto("https://www.google.com");
-    res.send(await page.title());
+
+    await page.goto('https://example.com');
+    const title = await page.$eval("h1", el => el.textContent.trim())
+    console.log("==========================================================")
+    console.log(20, title)
+
+    return res.status(200).json({ note: 'a ok', title });
   } catch (err) {
     console.error(err);
-    return null;
+    return res.status(500).json({ note: 'something wrong' });
   }
 });
 
