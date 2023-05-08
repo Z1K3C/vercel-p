@@ -28,8 +28,12 @@ app.get("/api", async (req, res) => {
 
     let page = await browser.newPage();
 
-    await page.goto('https://example.com');
-    const title = await page.$eval("h1", el => el.textContent.trim())
+    await page.goto("https://www.instagram.com/explore/tags/onlyonfifth/", {
+      waitUntil: "networkidle2",
+    })
+    await page.waitForSelector("h2", { timeout: 30000 })
+
+    const title = await page.$eval("h2", el => el.textContent.trim())
     console.log("==========================================================")
     console.log(20, title)
 
